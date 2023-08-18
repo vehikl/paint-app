@@ -1,70 +1,77 @@
-import {Layer, Rect, Stage, Star, Text} from 'react-konva';
-import {useState} from "react";
+import { useState } from "react";
+import { Layer, Rect, Stage } from "react-konva";
 
-export const MyCanvas = ({shapes}) => {
-    const [stars, setStars] = useState(shapes?.stars);
-    const handleDragStart = (e) => {
-        const id = e.target.id();
-        setStars(
-            stars.map((star) => {
-                return {
-                    ...star,
-                    isDragging: star.id === id,
-                };
-            })
-        );
-    };
-    const handleDragEnd = () => {
-        setStars(
-            stars.map((star) => {
-                return {
-                    ...star,
-                    isDragging: false,
-                };
-            })
-        );
-    };
+export const MyCanvas = ({ shapes }) => {
+  const [rectangles, setRectangles] = useState(shapes?.rectangles || []);
+  const [drawingRectangle, setDrawingRectangle] = useState(null);
 
-    return (
-        <div className={"myCanvasContainer"}>
-            <Stage width={window.innerWidth} height={window.innerHeight} className={"myCanvas"}>
-                <Layer>
-                    <Text text="Try to drag a star" draggable/>
-                    {stars.map((star) => (
-                        <Star
-                            key={star.id}
-                            id={star.id}
-                            x={star.x}
-                            y={star.y}
-                            numPoints={5}
-                            innerRadius={20}
-                            outerRadius={40}
-                            fill="#008000"
-                            opacity={0.8}
-                            draggable
-                            rotation={star.rotation}
-                            shadowColor="black"
-                            shadowBlur={10}
-                            shadowOpacity={0.6}
-                            shadowOffsetX={star.isDragging ? 10 : 5}
-                            shadowOffsetY={star.isDragging ? 10 : 5}
-                            scaleX={star.isDragging ? 1.2 : 1}
-                            scaleY={star.isDragging ? 1.2 : 1}
-                            onDragStart={handleDragStart}
-                            onDragEnd={handleDragEnd}
-                        />
+  const handleMouseDown = (event) => {
+    const { x, y } = event.target.getStage().getPointerPosition();
+    setDrawingRectangle({ x, y, width: 0, height: 0 });
+  };
 
-                    ))}
-                    <Rect
-                        x={20}
-                        y={50}
-                        width={100}
-                        height={100}
-                        fill="red"
-                        shadowBlur={10}
-                    />
-                </Layer>
-            </Stage>
-        </div>
-    )
-}
+  const handleMouseUp = (event) => {
+    if (drawingRectangle) {
+      const sx = drawingRectangle.x;
+      const sy = drawingRectangle.y;
+      const { x, y } = event.target.getStage().getPointerPosition();
+      const rectangleToAdd = {
+        x: sx,
+        y: sy,
+        width: x - sx,
+        height: y - sy,
+        fill: "transparent",
+        stroke: "black",
+      };
+      setDrawingRectangle(null);
+      setRectangles([...rectangles, rectangleToAdd]);
+    }
+  };
+
+  const handleMouseMove = (event) => {
+    if (drawingRectangle) {
+      const sx = drawingRectangle.x;
+      const sy = drawingRectangle.y;
+      const { x, y } = event.target.getStage().getPointerPosition();
+      setDrawingRectangle({
+        x: sx,
+        y: sy,
+        width: x - sx,
+        height: y - sy,
+        strokeWidth: 1,
+      });
+    }
+  };
+
+
+  return (
+    <Stage
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+      width={window.innerWidth}
+      height={window.innerHeight}
+      className={"myCanvas"}
+    >
+      <Layer>
+        {drawingRectangle && (
+          <Rect
+            x={drawingRectangle.x}
+            y={drawingRectangle.y}
+            width={drawingRectangle.width}
+            height={drawingRectangle.height}
+            fill="transparent"
+            stroke="black"
+            dash={[10, 5]}
+          />
+        )}
+        {rectangles.map((rect, index) => (
+          <Rect 
+          key={index} 
+          {...rect} 
+          draggable />
+        ))}
+      </Layer>
+    </Stage>
+  );
+};

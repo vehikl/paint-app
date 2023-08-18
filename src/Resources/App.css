@@ -1,33 +1,72 @@
 .container {
-
-    background-color: #f2f6f8;
+    background-color: #F2F3F6;
     height: 100vh;
     width: 100vw;
     display: grid;
-    grid-template-columns: 10% 90%;
+    grid-template-rows: 10% 90%;
 }
 
-.sidebarContainer {
+.navbarContainer {
+    padding: 10px 15px;
     background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
-.sidebar{
-    margin: 10px;
-    padding: 15px;
-    background-color: #FEFEFE;
-    height: 300px;
-    border-radius: 10px;
-    box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+
+.navbar {
+    width: 300px;
+    height: 40px;
+    background-color: #F8F9FA;
+    border: 0.5px solid #E5E5E5;
+    border-radius: 15px;
+    padding:0px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbarIcon {
+    font-size: 20px;
+    color: #5A566E;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.navbarIcon:hover, .navbarIcon.active {
+    color: #1c7dde;
 }
 
 .myCanvasContainer {
     background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
-.myCanvas{
+.myCanvas {
     margin: 10px;
-    background-color: #FEFEFE;
-    border-radius: 10px;
-    box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+    background-color: #F2F3F6;
+    border: 1px solid #FFFFFF;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative; 
+    z-index: 0;
 }
 
-
+.myCanvas::before,
+.myCanvasr::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(#E8E7E9 1px, transparent 2px);
+    background-size: 30px 30px; 
+    pointer-events: none;
+    z-index: -1; /* Set a lower z-index value than the page-wrapper */
+}
