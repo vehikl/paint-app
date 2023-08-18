@@ -1,0 +1,33 @@
+.container {
+
+    background-color: #f2f6f8;
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-columns: 10% 90%;
+}
+
+.sidebarContainer {
+    background-color: transparent;
+}
+.sidebar{
+    margin: 10px;
+    padding: 15px;
+    background-color: #FEFEFE;
+    height: 300px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+
+.myCanvasContainer {
+    background-color: transparent;
+}
+
+.myCanvas{
+    margin: 10px;
+    background-color: #FEFEFE;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+
+
