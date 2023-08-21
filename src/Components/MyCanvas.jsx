@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layer, Stage, Rect } from "react-konva";
 import { Rectangle } from "./Shapes/Rectangle";
 
@@ -34,8 +34,32 @@ export const MyCanvas = ({ mouseState, shapes }) => {
 
   const handleMultiSelect = (event) => {
     if (drawingRectangle) {
+      const selectedRects = rectangles.filter((rect, index) => {
+        // Check if the rectangle intersects with or is contained within the drawingRectangle
+        const rectBounds = {
+          left: rect.x,
+          top: rect.y,
+          right: rect.x + rect.width,
+          bottom: rect.y + rect.height,
+        };
+        const drawingBounds = {
+          left: drawingRectangle.x,
+          top: drawingRectangle.y,
+          right: drawingRectangle.x + drawingRectangle.width,
+          bottom: drawingRectangle.y + drawingRectangle.height,
+        };
+        const intersects = !(
+          rectBounds.right < drawingBounds.left ||
+          rectBounds.left > drawingBounds.right ||
+          rectBounds.bottom < drawingBounds.top ||
+          rectBounds.top > drawingBounds.bottom
+        );
+
+        return intersects;
+      });
+
       setDrawingRectangle(null);
-      /* all the rectangles within the selection area or intersecting the selection area */
+      setSelectedRectangles(selectedRects.map((_, index) => index));
     }
   };
 
@@ -76,6 +100,25 @@ export const MyCanvas = ({ mouseState, shapes }) => {
     setSelectedRectangles([index]);
   };
 
+  useEffect(() => {
+    const handleDeleteKeyPress = (event) => {
+      if (event.keyCode === 8) {
+
+        const updatedRectangles = rectangles.filter(
+          (_, index) => !selectedRectangles.includes(index)
+        );
+        setRectangles(updatedRectangles);
+        setSelectedRectangles([]);
+      }
+    };
+
+    document.addEventListener("keydown", handleDeleteKeyPress);
+
+    return () => {
+      document.removeEventListener("keydown", handleDeleteKeyPress);
+    };
+  }, [rectangles, selectedRectangles]);
+
   return (
     <Stage
       onMouseDown={handleMouseDown}
@@ -89,9 +132,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
       style={{ cursor: mouseState === "pointer" ? "default" : "crosshair" }}
     >
       <Layer>
-        {drawingRectangle && (
-          <Rect {...drawingRectangle} />
-        )}
+        {drawingRectangle && <Rect {...drawingRectangle} />}
         {rectangles.map((rect, index) => (
           <Rectangle
             onSelect={() => handleSelectRectangle(index)}
