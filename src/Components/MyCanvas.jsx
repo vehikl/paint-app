@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Layer, Rect, Stage } from "react-konva";
+import React, { useState } from "react";
+import { Layer, Stage, Rect } from "react-konva";
+import { Rectangle } from "./Shapes/Rectangle";
 
-export const MyCanvas = ({ shapes }) => {
+export const MyCanvas = ({ mouseState, shapes }) => {
   const [rectangles, setRectangles] = useState(shapes?.rectangles || []);
   const [drawingRectangle, setDrawingRectangle] = useState(null);
+  const [selectedRectangles, setSelectedRectangles] = useState([]);
 
   const handleMouseDown = (event) => {
     const { x, y } = event.target.getStage().getPointerPosition();
@@ -22,9 +24,18 @@ export const MyCanvas = ({ shapes }) => {
         height: y - sy,
         fill: "transparent",
         stroke: "black",
+        strokeWidth: 0.75,
       };
       setDrawingRectangle(null);
       setRectangles([...rectangles, rectangleToAdd]);
+      setSelectedRectangles([rectangles.length]);
+    }
+  };
+
+  const handleMultiSelect = (event) => {
+    if (drawingRectangle) {
+      setDrawingRectangle(null);
+      /* all the rectangles within the selection area or intersecting the selection area */
     }
   };
 
@@ -38,38 +49,62 @@ export const MyCanvas = ({ shapes }) => {
         y: sy,
         width: x - sx,
         height: y - sy,
-        strokeWidth: 1,
+        strokeWidth: 0.75,
+        stroke: "black",
+        dash: [10, 5],
       });
     }
   };
 
+  const handleMouseMoveSelect = (event) => {
+    if (drawingRectangle) {
+      const sx = drawingRectangle.x;
+      const sy = drawingRectangle.y;
+      const { x, y } = event.target.getStage().getPointerPosition();
+      setDrawingRectangle({
+        x: sx,
+        y: sy,
+        width: x - sx,
+        height: y - sy,
+        fill: "rgba(30, 144, 255, 0.2)",
+        strokeWidth: 0.75,
+        stroke: "#1e90ff",
+      });
+    }
+  };
+  const handleSelectRectangle = (index) => {
+    setSelectedRectangles([index]);
+  };
 
   return (
     <Stage
       onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
+      onMouseUp={mouseState === "rectangle" ? handleMouseUp : handleMultiSelect}
+      onMouseMove={
+        mouseState === "rectangle" ? handleMouseMove : handleMouseMoveSelect
+      }
       width={window.innerWidth}
       height={window.innerHeight}
       className={"myCanvas"}
+      style={{ cursor: mouseState === "pointer" ? "default" : "crosshair" }}
     >
       <Layer>
         {drawingRectangle && (
-          <Rect
-            x={drawingRectangle.x}
-            y={drawingRectangle.y}
-            width={drawingRectangle.width}
-            height={drawingRectangle.height}
-            fill="transparent"
-            stroke="black"
-            dash={[10, 5]}
-          />
+          <Rect {...drawingRectangle} />
         )}
         {rectangles.map((rect, index) => (
-          <Rect 
-          key={index} 
-          {...rect} 
-          draggable />
+          <Rectangle
+            onSelect={() => handleSelectRectangle(index)}
+            onChange={(newAttrs) => {
+              const rects = rectangles.slice();
+              rects[index] = newAttrs;
+              setRectangles(rects);
+            }}
+            isSelected={selectedRectangles.includes(index)}
+            key={index}
+            {...rect}
+            draggable={mouseState === "pointer"}
+          />
         ))}
       </Layer>
     </Stage>

@@ -12,7 +12,7 @@ function App() {
     return (
         <div className="container">
             <Navbar mouseState={mouseState} setMouseState={setMouseState} />
-            <MyCanvas shapes={shapes} />
+            <MyCanvas mouseState={mouseState} shapes={shapes} />
         </div>
     )
 }
