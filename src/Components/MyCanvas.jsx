@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Layer, Stage, Rect } from "react-konva";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Layer, Stage, Rect, Line } from "react-konva";
 import { Rectangle } from "./Shapes/Rectangle";
 
 export const MyCanvas = ({ mouseState, shapes }) => {
@@ -7,14 +7,42 @@ export const MyCanvas = ({ mouseState, shapes }) => {
   const [rectangles, setRectangles] = useState(shapes?.rectangles || []);
   const [drawingRectangle, setDrawingRectangle] = useState(null);
   const [selectedRectangles, setSelectedRectangles] = useState([]);
+  const [lines, setLines] = useState([]);
 
-  
-  const handleMouseDown = (event) => {
+  const isDrawing = useRef(false);
+
+
+  const handleRectangleMouseDown = (event) => {
     const { x, y } = event.target.getStage().getPointerPosition();
     setDrawingRectangle({ x, y, width: 0, height: 0 });
   };
 
-  const handleMouseUp = (event) => {
+  const handleLineMouseDown = (e) => {
+    isDrawing.current = true;
+    const pos = e.target.getStage().getPointerPosition();
+    setLines([...lines, { mouseState, points: [pos.x, pos.y] }]);
+  };
+
+  const handleLineMouseMove = (e) => {
+    if (!isDrawing.current) {
+      return;
+    }
+    const stage = e.target.getStage();
+    const point = stage.getPointerPosition();
+    let lastLine = lines[lines.length - 1];
+    // add point
+    lastLine.points = lastLine.points.concat([point.x, point.y]);
+
+    // replace last
+    lines.splice(lines.length - 1, 1, lastLine);
+    setLines(lines.concat());
+  }
+
+  const handleLineMouseUp = (e) => {
+    isDrawing.current = false;
+  }
+
+  const handleRectangleMouseUp = (event) => {
     if (drawingRectangle) {
       const sx = drawingRectangle.x;
       const sy = drawingRectangle.y;
@@ -39,7 +67,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
     setDrawingRectangle(null);
   };
 
-  const handleMouseMove = (event) => {
+  const handleRectangleMouseMove = (event) => {
     if (drawingRectangle) {
       const sx = drawingRectangle.x;
       const sy = drawingRectangle.y;
@@ -56,8 +84,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
     }
   };
 
-  const handleMouseMoveSelect = useCallback(
-    (event) => {
+  const handleMouseMoveSelect = (event) => {
       if (drawingRectangle && !isAdjusting) {
         let sx = Math.min(drawingRectangle.x, event.evt.layerX);
         let sy = Math.min(drawingRectangle.y, event.evt.layerY);
@@ -73,14 +100,12 @@ export const MyCanvas = ({ mouseState, shapes }) => {
               bottom: rect.y + rect.height,
             };
 
-            const intersects = !(
+            return !(
               rectBounds.right < sx ||
               rectBounds.left > ex ||
               rectBounds.bottom < sy ||
               rectBounds.top > ey
             );
-
-            return intersects;
           })
           .map((rect) => rect.id);
 
@@ -99,9 +124,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
 
         setSelectedRectangles(selectedRects);
       }
-    },
-    [rectangles, drawingRectangle]
-  );
+    }
 
   const handleSelectRectangle = (event) => {
     setSelectedRectangles([event.target.attrs.id]);
@@ -130,13 +153,35 @@ export const MyCanvas = ({ mouseState, shapes }) => {
     };
   }, [rectangles, selectedRectangles]);
 
+  const pen = {
+    handleMouseDown:handleLineMouseDown,
+    handleMouseUp:handleLineMouseUp,
+    handleMouseMove:handleLineMouseMove
+  }
+
+  const rectangle = {
+    handleMouseDown:handleRectangleMouseDown,
+    handleMouseUp:handleRectangleMouseUp,
+    handleMouseMove:handleRectangleMouseMove
+  }
+  const pointer = {
+    handleMouseDown:handleRectangleMouseDown,
+    handleMouseUp:handleMultiSelect,
+    handleMouseMove:handleMouseMoveSelect
+  }
+
+  const tools = {
+    pen,
+    rectangle,
+    pointer
+  }
+
+
   return (
     <Stage
-      onMouseDown={handleMouseDown}
-      onMouseUp={mouseState === "rectangle" ? handleMouseUp : handleMultiSelect}
-      onMouseMove={
-        mouseState === "rectangle" ? handleMouseMove : handleMouseMoveSelect
-      }
+      onMouseDown={tools[mouseState].handleMouseDown}
+      onMouseUp={tools[mouseState].handleMouseUp}
+      onMouseMove={tools[mouseState].handleMouseMove}
       width={window.innerWidth}
       height={window.innerHeight}
       className={"myCanvas"}
@@ -157,6 +202,18 @@ export const MyCanvas = ({ mouseState, shapes }) => {
             {...rect}
             draggable={mouseState === "pointer"}
           />
+        ))}
+        {lines.map((line, i) => (
+            <Line
+                key={i}
+                points={line.points}
+                stroke="#df4b26"
+                strokeWidth={5}
+                tension={0.5}
+                lineCap="round"
+                lineJoin="round"
+                globalCompositeOperation="source-over"
+            />
         ))}
       </Layer>
     </Stage>
