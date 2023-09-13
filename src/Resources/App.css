@@ -36,6 +36,7 @@
 
 .navbarIcon:hover, .navbarIcon.active {
     color: #1c7dde;
+    position: relative;
 }
 
 .myCanvasContainer {
@@ -53,12 +54,12 @@
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    position: relative; 
+    position: relative;
     z-index: 0;
 }
 
 .myCanvas::before,
-.myCanvasr::after {
+.myCanvas::after {
     content: "";
     position: absolute;
     top: 0;
@@ -66,7 +67,22 @@
     width: 100%;
     height: 100%;
     background-image: radial-gradient(#E8E7E9 1px, transparent 2px);
-    background-size: 30px 30px; 
+    background-size: 30px 30px;
     pointer-events: none;
     z-index: -1; /* Set a lower z-index value than the page-wrapper */
+}
+
+.childToolDropdown {
+    position: absolute;
+    display:flex;
+    flex-direction: column;
+    z-index: 1;
+    height: 60px;
+    background-color: #F8F9FA;
+    border: 0.5px solid #E5E5E5;
+    border-radius: 5px;
+    padding:20px;
+    margin: 15px -20px;
+    align-items: center;
+    justify-content: space-between;
 }
