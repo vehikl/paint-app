@@ -54,7 +54,6 @@ export const Navbar = ({ mouseState, setMouseState }) => {
   useEffect(() => {
     const handleKeydown = (e) => {
       if (e.target.classList.contains("child")) {
-        // Handle child icon click
         const childState = e.target.getAttribute("data-state");
         handleMouseStateChange(childState, currentIcon);
         setShowChildren(false);
@@ -67,8 +66,6 @@ export const Navbar = ({ mouseState, setMouseState }) => {
       window.removeEventListener("mousedown", handleKeydown);
     };
   }, [currentIcon]);
-
-  console.log(showChildren);
 
   return (
     <div className="navbarContainer">
