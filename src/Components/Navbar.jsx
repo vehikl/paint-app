@@ -4,7 +4,23 @@ import { PiCursorBold, PiRectangleBold } from "react-icons/pi";
 import { BsVectorPen } from "react-icons/bs";
 import { RiImageAddLine } from "react-icons/ri";
 import { CgFormatText } from "react-icons/cg";
-import {AiFillCaretDown} from "react-icons/ai";
+import NavbarItem from "./NavbarItem"; // Import the NavbarItem component
+
+const icons = [
+  { Icon: PiCursorBold, state: "pointer" },
+  { Icon: PiRectangleBold, state: "rectangle" },
+  { Icon: CgFormatText, state: "text" },
+  {
+    Icon: BsVectorPen,
+    state: "pen",
+    children: [
+      { Icon: BsVectorPen, state: "pen" },
+      { Icon: FaEraser, state: "eraser" },
+    ],
+  },
+  { Icon: RiImageAddLine, state: "image" },
+];
+
 
 export const Navbar = ({ mouseState, setMouseState }) => {
   const [showChildren, setShowChildren] = useState(false);
@@ -15,32 +31,6 @@ export const Navbar = ({ mouseState, setMouseState }) => {
     setCurrentIcon(icon);
   };
 
-  const icons = [
-    { icon: PiCursorBold, state: "pointer" },
-    { icon: PiRectangleBold, state: "rectangle" },
-    { icon: CgFormatText, state: "text" },
-    {
-      icon: BsVectorPen,
-      state: "pen",
-      children: [
-        { icon: BsVectorPen, state: "pen" },
-        { icon: FaEraser, state: "eraser" },
-      ],
-    },
-    { icon: RiImageAddLine, state: "image" },
-  ];
-
-  const handleParentIcon = (state, icon) => {
-    setShowChildren(true);
-    setCurrentIcon(icon);
-    setMouseState(state);
-  };
-
-  const handleClick = (state, icon) => {
-    setShowChildren(false);
-    setCurrentIcon(icon);
-    setMouseState(state);
-  };
 
   const handleMouseLeave = () => {
     setShowChildren(false);
@@ -48,7 +38,7 @@ export const Navbar = ({ mouseState, setMouseState }) => {
   };
 
   const handleHover = () => {
-    if (currentIcon.state !== "pen") setShowChildren(false);
+    if (currentIcon && currentIcon.state !== "pen") setShowChildren(false);
   };
 
   useEffect(() => {
@@ -65,52 +55,27 @@ export const Navbar = ({ mouseState, setMouseState }) => {
     return () => {
       window.removeEventListener("mousedown", handleKeydown);
     };
-  }, [currentIcon]);
+  }, [currentIcon, handleMouseStateChange]);
 
   return (
     <div className="navbarContainer">
       <div className="navbar">
         <FaFile className="navbarIcon" />
-        {icons.map(({ icon: Icon, state, children }) => (
-          <div
-            className={"iconContainer"}
+        {icons.map(({ Icon, state, children }) => (
+          <NavbarItem
             key={state}
+            Icon={Icon}
+            state={state}
+            mouseState={mouseState}
+            currentIcon={currentIcon}
+            handleMouseStateChange={handleMouseStateChange}
+            handleHover={handleHover}
+            showChildren={showChildren}
+            setShowChildren={setShowChildren}
+            handleMouseLeave={handleMouseLeave}
           >
-            <Icon
-              className={`navbarIcon ${
-                (mouseState === state || currentIcon === Icon) && !showChildren
-                  ? "active"
-                  : ""
-              }`}
-              onClick={() => handleMouseStateChange(state, Icon)}
-              onMouseOver={() => handleHover()}
-            />
-            {children && (
-              <AiFillCaretDown className="navbarIcon caret"
-                onClick={() => setShowChildren(true)}
-              />
-            )}
-            {children && showChildren && (
-              <div
-                className={"childToolDropdown"}
-                onMouseLeave={() => handleMouseLeave()}
-              >
-                {children.map(({ icon: ChildIcon, state: childState }) => (
-                  <ChildIcon
-                    key={childState}
-                    className={`navbarIcon child ${
-                      mouseState === childState ? "active" : ""
-                    }`}
-                    onClick={() => {
-                      handleMouseStateChange(childState, ChildIcon);
-                      setShowChildren(false);
-                    }}
-                    data-state={childState}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+            {children}
+          </NavbarItem>
         ))}
       </div>
     </div>

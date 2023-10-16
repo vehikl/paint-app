@@ -26,6 +26,12 @@
     justify-content: space-between;
 }
 
+.iconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .navbarIcon {
     font-size: 20px;
     color: #5A566E;
@@ -83,7 +89,7 @@
     z-index: -1; /* Set a lower z-index value than the page-wrapper */
 }
 
-.childToolDropdown {
+/* .childToolDropdown {
     position: absolute;
     display:flex;
     flex-direction: column;
@@ -93,7 +99,27 @@
     border: 0.5px solid #E5E5E5;
     border-radius: 5px;
     padding:20px;
+    margin: 15px 0px;
+    align-items: center;
+    justify-content: space-between;
+    top: 0;
+} */
+
+/* childToolDropdown should be below navbar */
+
+.childToolDropdown {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    height: 60px;
+    background-color: #F8F9FA;
+    border: 0.5px solid #E5E5E5;
+    border-radius: 5px;
+    padding: 20px;
     margin: 15px -20px;
     align-items: center;
     justify-content: space-between;
+    top: 40px; /* Increase the value to add more space at the top */
 }
+
