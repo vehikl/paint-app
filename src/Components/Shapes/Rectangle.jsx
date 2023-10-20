@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Rect, Transformer } from "react-konva";
 
-export const Rectangle = ({ isSelected, onSelect, onChange, ...props }) => {
+export const Rectangle = ({ isSelected, onSelect, onChange, setIsAdjusting, ...props }) => {
   const shapeRef = useRef();
   const trRef = useRef();
 
@@ -36,6 +36,7 @@ export const Rectangle = ({ isSelected, onSelect, onChange, ...props }) => {
             height: Math.max(node.height() * scaleY),
             rotation: node.rotation(),
           });
+          setIsAdjusting(false);
         }}
       />
       {isSelected && (

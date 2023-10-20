@@ -64,7 +64,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
           setDrawingRectangle,
           rectangles,
           setRectangles,
-          setSelectedRectangles
+          setSelectedRectangles,
         ),
     },
     pointer: {
@@ -113,6 +113,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
             key={index}
             {...rect}
             draggable={mouseState === "pointer"}
+            setIsAdjusting={setIsAdjusting}
           />
         ))}
         {lines.map((line, i) => (
