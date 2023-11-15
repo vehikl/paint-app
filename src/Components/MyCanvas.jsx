@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Layer, Stage, Rect, Line } from "react-konva";
+import { Layer, Stage, Rect, Line, Text } from "react-konva";
 import { Rectangle } from "./Shapes/Rectangle";
-import { PenTool, PointerTool, RectangleTool } from "./Tools";
-import { EraserTool } from "./Tools/EraserTool";
+import {
+  PenTool,
+  PointerTool,
+  RectangleTool,
+  EraserTool,
+  TextTool,
+} from "./Tools";
 
 export const MyCanvas = ({ mouseState, shapes }) => {
   const [isAdjusting, setIsAdjusting] = useState(false);
@@ -10,6 +15,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
   const [drawingRectangle, setDrawingRectangle] = useState(null);
   const [selectedRectangles, setSelectedRectangles] = useState([]);
   const [lines, setLines] = useState([]);
+  const [texts, setTexts] = useState([]);
 
   const isDrawing = useRef(false);
 
@@ -32,6 +38,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
   }, [rectangles, selectedRectangles]);
 
   const penTool = new PenTool();
+  const textTool = new TextTool();
   const eraserTool = new EraserTool();
   const rectangleTool = new RectangleTool();
   const pointerTool = new PointerTool();
@@ -64,7 +71,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
           setDrawingRectangle,
           rectangles,
           setRectangles,
-          setSelectedRectangles,
+          setSelectedRectangles
         ),
     },
     pointer: {
@@ -81,7 +88,17 @@ export const MyCanvas = ({ mouseState, shapes }) => {
         ),
       handleMouseUp: (e) => pointerTool.handleMouseUp(setDrawingRectangle),
     },
+    text: {
+      handleMouseDown: (e) =>
+        textTool.handleMouseDown(e, texts, setTexts),
+      handleMouseMove: (e) =>
+        textTool.handleMouseMove(),
+      handleMouseUp: () => textTool.handleMouseUp(),
+      handleTextDoubleClick: (index) =>
+        textTool.handleTextDoubleClick(index, texts, setTexts),
+    },
   };
+
 
   return (
     <Stage
@@ -91,7 +108,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
       width={window.innerWidth}
       height={window.innerHeight}
       className={"myCanvas"}
-      style={{ cursor: mouseState === "pointer" ? "default" : "crosshair" }}
+      style={{ cursor: mouseState === "pointer" ? "default" : mouseState === "text" ? "text" : "crosshair" }}
     >
       <Layer>{drawingRectangle && <Rect {...drawingRectangle} />}</Layer>
       <Layer>
@@ -126,6 +143,15 @@ export const MyCanvas = ({ mouseState, shapes }) => {
             lineCap="round"
             lineJoin="round"
             globalCompositeOperation="source-over"
+          />
+        ))}
+      </Layer>
+      <Layer>
+      {texts.map((text, index) => (
+          <Text
+            key={index}
+            {...text}
+            draggable={mouseState === "pointer"}
           />
         ))}
       </Layer>
