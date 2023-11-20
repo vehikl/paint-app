@@ -1,19 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Layer, Stage, Rect, Line, Text } from "react-konva";
 import { Rectangle } from "./Shapes/Rectangle";
+import { EllipseComponent } from "./Shapes/Ellipse";
 import {
   PenTool,
   PointerTool,
   RectangleTool,
+  EllipseTool,
   EraserTool,
   TextTool,
 } from "./Tools";
 
-export const MyCanvas = ({ mouseState, shapes }) => {
+const initialSelectedShapes = {
+  rectangles: [],
+  ellipses: [],
+  lines: [],
+  texts: [],
+};
+
+export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
   const [isAdjusting, setIsAdjusting] = useState(false);
-  const [rectangles, setRectangles] = useState(shapes?.rectangles || []);
   const [drawingRectangle, setDrawingRectangle] = useState(null);
-  const [selectedRectangles, setSelectedRectangles] = useState([]);
+  const [drawingEllipse, setDrawingEllipse] = useState(null);
+  const [selectedShapes, setSelectedShapes] = useState(initialSelectedShapes);
   const [lines, setLines] = useState([]);
   const [texts, setTexts] = useState([]);
 
@@ -22,11 +31,18 @@ export const MyCanvas = ({ mouseState, shapes }) => {
   useEffect(() => {
     const handleDeleteKeyPress = (event) => {
       if (event.keyCode === 8) {
-        const updatedRectangles = rectangles.filter(
-          (rect) => !selectedRectangles.includes(rect.id)
-        );
-        setRectangles(updatedRectangles);
-        setSelectedRectangles([]);
+        const updatedShapes = {
+          ...shapes,
+          rectangles: shapes.rectangles.filter(
+            (rect) => !selectedShapes.rectangles.includes(rect.id)
+          ),
+          ellipses: shapes.ellipses.filter(
+            (ellps) => !selectedShapes.ellipses.includes(ellps.id)
+          ),
+        };
+        setShapes(updatedShapes);
+
+        setSelectedShapes(initialSelectedShapes);
       }
     };
 
@@ -35,12 +51,13 @@ export const MyCanvas = ({ mouseState, shapes }) => {
     return () => {
       document.removeEventListener("keydown", handleDeleteKeyPress);
     };
-  }, [rectangles, selectedRectangles]);
+  }, [shapes, setShapes, selectedShapes]);
 
   const penTool = new PenTool();
   const textTool = new TextTool();
   const eraserTool = new EraserTool();
   const rectangleTool = new RectangleTool();
+  const ellipseTool = new EllipseTool();
   const pointerTool = new PointerTool();
 
   const tools = {
@@ -69,9 +86,26 @@ export const MyCanvas = ({ mouseState, shapes }) => {
           e,
           drawingRectangle,
           setDrawingRectangle,
-          rectangles,
-          setRectangles,
-          setSelectedRectangles
+          shapes,
+          setShapes,
+          selectedShapes,
+          setSelectedShapes
+        ),
+    },
+
+    ellipse: {
+      handleMouseDown: (e) => ellipseTool.handleMouseDown(e, setDrawingEllipse),
+      handleMouseMove: (e) =>
+        ellipseTool.handleMouseMove(e, drawingEllipse, setDrawingEllipse),
+      handleMouseUp: (e) =>
+        ellipseTool.handleMouseUp(
+          e,
+          drawingEllipse,
+          setDrawingEllipse,
+          shapes,
+          setShapes,
+          selectedShapes,
+          setSelectedShapes
         ),
     },
     pointer: {
@@ -83,22 +117,20 @@ export const MyCanvas = ({ mouseState, shapes }) => {
           drawingRectangle,
           setDrawingRectangle,
           isAdjusting,
-          rectangles,
-          setSelectedRectangles
+          shapes,
+          selectedShapes,
+          setSelectedShapes
         ),
       handleMouseUp: (e) => pointerTool.handleMouseUp(setDrawingRectangle),
     },
     text: {
-      handleMouseDown: (e) =>
-        textTool.handleMouseDown(e, texts, setTexts),
-      handleMouseMove: (e) =>
-        textTool.handleMouseMove(),
+      handleMouseDown: (e) => textTool.handleMouseDown(e, texts, setTexts),
+      handleMouseMove: (e) => textTool.handleMouseMove(),
       handleMouseUp: () => textTool.handleMouseUp(),
       handleTextDoubleClick: (index) =>
         textTool.handleTextDoubleClick(index, texts, setTexts),
     },
   };
-
 
   return (
     <Stage
@@ -108,27 +140,66 @@ export const MyCanvas = ({ mouseState, shapes }) => {
       width={window.innerWidth}
       height={window.innerHeight}
       className={"myCanvas"}
-      style={{ cursor: mouseState === "pointer" ? "default" : mouseState === "text" ? "text" : "crosshair" }}
+      style={{
+        cursor:
+          mouseState === "pointer"
+            ? "default"
+            : mouseState === "text"
+            ? "text"
+            : "crosshair",
+      }}
     >
       <Layer>{drawingRectangle && <Rect {...drawingRectangle} />}</Layer>
       <Layer>
-        {rectangles.map((rect, index) => (
+        {drawingEllipse && <EllipseComponent {...drawingEllipse} />}
+      </Layer>
+      <Layer>
+        {shapes.rectangles.map((rect, index) => (
           <Rectangle
             onSelect={(e) =>
-              rectangleTool.handleSelectRectangle(
+              rectangleTool.handleSelectShape(
                 e,
-                setSelectedRectangles,
+                selectedShapes,
+                setSelectedShapes,
                 setIsAdjusting
               )
             }
             onChange={(newAttrs) => {
-              const rects = rectangles.slice();
-              rects[index] = newAttrs;
-              setRectangles(rects);
+              const updatedShapes = {
+                ...shapes,
+                rectangles: shapes.rectangles.slice(),
+              };
+              updatedShapes.rectangles[index] = newAttrs;
+              setShapes(updatedShapes);
             }}
-            isSelected={selectedRectangles.includes(rect.id)}
+            isSelected={selectedShapes.rectangles?.includes(rect.id)}
             key={index}
             {...rect}
+            draggable={mouseState === "pointer"}
+            setIsAdjusting={setIsAdjusting}
+          />
+        ))}
+        {shapes.ellipses.map((ellipse, index) => (
+          <EllipseComponent
+            onSelect={(e) =>
+              ellipse.handleSelectShape(
+                e,
+                selectedShapes,
+                setSelectedShapes,
+                setIsAdjusting
+              )
+            }
+            onChange={(newAttrs) => {
+              const updatedShapes = {
+                ...shapes,
+                ellipses: shapes.ellipses.slice(),
+              };
+              updatedShapes.rectangles[index] = newAttrs;
+              setShapes(updatedShapes);
+            }}
+            isSelected={selectedShapes?.ellipses?.includes(ellipse.id)}
+            key={index}
+            {...ellipse}
             draggable={mouseState === "pointer"}
             setIsAdjusting={setIsAdjusting}
           />
@@ -137,7 +208,7 @@ export const MyCanvas = ({ mouseState, shapes }) => {
           <Line
             key={i}
             points={line.points}
-            stroke="#df4b26"
+            stroke="#000"
             strokeWidth={5}
             tension={0.5}
             lineCap="round"
@@ -147,12 +218,8 @@ export const MyCanvas = ({ mouseState, shapes }) => {
         ))}
       </Layer>
       <Layer>
-      {texts.map((text, index) => (
-          <Text
-            key={index}
-            {...text}
-            draggable={mouseState === "pointer"}
-          />
+        {texts.map((text, index) => (
+          <Text key={index} {...text} draggable={mouseState === "pointer"} />
         ))}
       </Layer>
     </Stage>

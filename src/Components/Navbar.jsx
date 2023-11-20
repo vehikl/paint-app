@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaEraser, FaFile } from "react-icons/fa";
-import { PiCursorBold, PiRectangleBold } from "react-icons/pi";
+import { PiCursorBold, PiRectangleBold, PiCircleBold } from "react-icons/pi";
 import { BsVectorPen } from "react-icons/bs";
 import { RiImageAddLine } from "react-icons/ri";
 import { CgFormatText } from "react-icons/cg";
@@ -8,7 +8,14 @@ import NavbarItem from "./NavbarItem"; // Import the NavbarItem component
 
 const icons = [
   { Icon: PiCursorBold, state: "pointer" },
-  { Icon: PiRectangleBold, state: "rectangle" },
+  {
+    Icon: PiRectangleBold,
+    state: "rectangle",
+    children: [
+      { Icon: PiRectangleBold, state: "rectangle" },
+      { Icon: PiCircleBold, state: "ellipse" },
+    ],
+  },
   { Icon: CgFormatText, state: "text" },
   {
     Icon: BsVectorPen,
@@ -21,7 +28,6 @@ const icons = [
   { Icon: RiImageAddLine, state: "image" },
 ];
 
-
 export const Navbar = ({ mouseState, setMouseState }) => {
   const [showChildren, setShowChildren] = useState(false);
   const [currentIcon, setCurrentIcon] = useState(null);
@@ -30,7 +36,6 @@ export const Navbar = ({ mouseState, setMouseState }) => {
     setMouseState(state);
     setCurrentIcon(icon);
   };
-
 
   const handleMouseLeave = () => {
     setShowChildren(false);
@@ -70,9 +75,12 @@ export const Navbar = ({ mouseState, setMouseState }) => {
             currentIcon={currentIcon}
             handleMouseStateChange={handleMouseStateChange}
             handleHover={handleHover}
-            showChildren={showChildren}
-            setShowChildren={setShowChildren}
+            showChildren={showChildren[state]}
+            setShowChildren={(value) =>
+              setShowChildren({ ...showChildren, [state]: value })
+            }
             handleMouseLeave={handleMouseLeave}
+            className="navbarIcon"
           >
             {children}
           </NavbarItem>

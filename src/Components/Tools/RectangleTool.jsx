@@ -21,7 +21,15 @@ export class RectangleTool {
     }
   }
 
-  handleMouseUp(e, drawingRectangle, setDrawingRectangle, rectangles, setRectangles, setSelectedRectangles) {
+  handleMouseUp(
+    e,
+    drawingRectangle,
+    setDrawingRectangle,
+    shapes,
+    setShapes,
+    selectedShapes,
+    setSelectedShapes
+  ) {
     if (drawingRectangle) {
       const sx = drawingRectangle.x;
       const sy = drawingRectangle.y;
@@ -37,13 +45,19 @@ export class RectangleTool {
         strokeWidth: 0.75,
       };
       setDrawingRectangle(null);
-      setRectangles([...rectangles, rectangleToAdd]);
-      setSelectedRectangles([rectangleToAdd.id]);
+
+      const updatedShapes = {
+        ...shapes,
+        rectangles: [...shapes.rectangles, rectangleToAdd],
+      };
+
+      setShapes(updatedShapes);
+      setSelectedShapes({...selectedShapes, rectangles: [rectangleToAdd.id]});
     }
   }
 
-  handleSelectRectangle(e, setSelectedRectangles, setIsAdjusting) {
-    setSelectedRectangles([e.target.attrs.id]);
+  handleSelectShape(e, selectedShapes, setSelectedShapes, setIsAdjusting) {
+    setSelectedShapes({ ...selectedShapes, rectangles: [e.target.attrs.id] });
     setIsAdjusting(true); // Set the flag to true when adjusting
   }
 }

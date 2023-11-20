@@ -4,14 +4,22 @@ export class PointerTool {
     setDrawingRectangle({ x, y, width: 0, height: 0 });
   }
 
-  handleMouseMove(e, drawingRectangle, setDrawingRectangle, isAdjusting, rectangles, setSelectedRectangles) {
+  handleMouseMove(
+    e,
+    drawingRectangle,
+    setDrawingRectangle,
+    isAdjusting,
+    shapes,
+    selectedShapes,
+    setSelectedShapes
+  ) {
     if (drawingRectangle && !isAdjusting) {
       const sx = Math.min(drawingRectangle.x, e.evt.layerX);
       const sy = Math.min(drawingRectangle.y, e.evt.layerY);
       const ex = Math.max(drawingRectangle.x, e.evt.layerX);
       const ey = Math.max(drawingRectangle.y, e.evt.layerY);
 
-      const selectedRects = rectangles
+      const selectedRects = shapes.rectangles
         .filter((rect) => {
           const rectBounds = {
             left: rect.x,
@@ -29,6 +37,24 @@ export class PointerTool {
         })
         .map((rect) => rect.id);
 
+      const selectedEllipses = shapes.ellipses
+        .filter((ellps) => {
+          const ellpsBounds = {
+            left: ellps.x,
+            top: ellps.y,
+            right: ellps.x + ellps.width,
+            bottom: ellps.y + ellps.height,
+          };
+
+          return !(
+            ellpsBounds.right < sx ||
+            ellpsBounds.left > ex ||
+            ellpsBounds.bottom < sy ||
+            ellpsBounds.top > ey
+          );
+        })
+        .map((ellps) => ellps.id);
+
       const { x, y } = e.target.getStage().getPointerPosition();
       setDrawingRectangle({
         x: sx,
@@ -40,7 +66,7 @@ export class PointerTool {
         stroke: "#1e90ff",
       });
 
-      setSelectedRectangles(selectedRects);
+      setSelectedShapes({ ...selectedShapes, rectangles: selectedRects, ellipses: selectedEllipses });
     }
   }
 

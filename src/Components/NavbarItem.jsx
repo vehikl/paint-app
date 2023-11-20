@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AiFillCaretDown } from "react-icons/ai";
+import { FaChevronDown } from "react-icons/fa";
 
 const NavbarItem = ({
   Icon,
@@ -25,7 +26,6 @@ const NavbarItem = ({
     setCurrentDisplayedIcon(Icon);
   }, [Icon]);
 
-
   return (
     <div className="iconContainer">
       <div
@@ -41,7 +41,8 @@ const NavbarItem = ({
       </div>
 
       {children && (
-        <AiFillCaretDown
+        <FaChevronDown
+          size={10}
           className="navbarIcon caret"
           onClick={() => setShowChildren(true)}
         />

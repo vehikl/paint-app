@@ -22,4 +22,9 @@ export class PenTool {
   handleMouseUp(isDrawing) {
     isDrawing.current = false;
   }
+
+  handleSelectShape(e, setSelectedShapes, setIsAdjusting) {
+    setSelectedShapes({ pen: [e.target.attrs.id] });
+    setIsAdjusting(true); // Set the flag to true when adjusting
+  }
 }

@@ -1,6 +1,5 @@
 export class TextTool {
   handleMouseDown(e, texts, setTexts) {
-    alert("TextTool.handleMouseDown");
     const { x, y } = e.target.getStage().getPointerPosition();
     const defaultText = { x, y, fontSize: 16, text: "Type Here" };
 

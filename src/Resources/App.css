@@ -29,15 +29,17 @@
 .iconContainer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .navbarIcon {
+    display: flex;
     font-size: 20px;
     color: #5A566E;
     border: none;
     outline: none;
     cursor: pointer;
+    align-items: center;
 }
 
 .navbarIcon:hover, .navbarIcon.active {
@@ -46,7 +48,6 @@
 }
 
 .caret {
-    font-size: 16px; 
     color: #5A566E;
     padding-left: 2px;
     cursor: pointer;
@@ -54,6 +55,8 @@
   
   .caret:hover {
     color: #1c7dde; /* Change the hover color to your desired color */
+    margin-top: 2px;
+    transition-duration: 0.5s;
   }
 
 .myCanvasContainer {
