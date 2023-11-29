@@ -51,14 +51,16 @@ const NavbarItem = ({
       {children && showChildren && (
         <div className="childToolDropdown" onMouseLeave={handleMouseLeave}>
           {children.map(({ Icon: ChildIcon, state: childState }) => (
-            <ChildIcon
+            <div
               key={childState}
               className={`navbarIcon child ${
                 mouseState === childState ? "active" : ""
               }`}
               onClick={() => handleChildIconClick(childState, ChildIcon)}
               data-state={childState}
-            />
+            >
+              <ChildIcon />
+            </div>
           ))}
         </div>
       )}

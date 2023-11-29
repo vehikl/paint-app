@@ -81,6 +81,7 @@ export const Navbar = ({ mouseState, setMouseState }) => {
             }
             handleMouseLeave={handleMouseLeave}
             className="navbarIcon"
+            childIcons={children}
           >
             {children}
           </NavbarItem>
