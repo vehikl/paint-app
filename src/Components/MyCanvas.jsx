@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Layer, Stage, Rect, Line, Text } from "react-konva";
+import { Layer, Stage, Rect, Line, Text, Ellipse } from "react-konva";
 import { Rectangle } from "./Shapes/Rectangle";
 import { EllipseComponent } from "./Shapes/Ellipse";
 import {
@@ -151,7 +151,15 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
     >
       <Layer>{drawingRectangle && <Rect {...drawingRectangle} />}</Layer>
       <Layer>
-        {drawingEllipse && <EllipseComponent {...drawingEllipse} />}
+        {drawingEllipse && <Ellipse
+          x={drawingEllipse.x + drawingEllipse.width/2}
+          y={drawingEllipse.y + drawingEllipse.height/2}
+          radiusX={drawingEllipse.width/2}
+          radiusY={drawingEllipse.height / 2}
+          fill="transparent"
+          stroke="black"
+          strokeWidth={0.75}
+        />}
       </Layer>
       <Layer>
         {shapes.rectangles.map((rect, index) => (

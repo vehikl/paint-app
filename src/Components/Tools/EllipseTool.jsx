@@ -25,13 +25,15 @@ export class EllipseTool {
   setSelectedShapes
 ) {
   if (drawingEllipse) {
+    const sx = drawingEllipse.x;
+    const sy = drawingEllipse.y;
     const { x, y } = e.target.getStage().getPointerPosition();
-    const ellipseToAdd = {
+    const ellipsesToAdd = {
       id: Math.random().toString(36).substring(2, 6),
-      x: drawingEllipse.x,
-      y: drawingEllipse.y,
-      width: x - drawingEllipse.x,
-      height: y - drawingEllipse.y,
+      x: drawingEllipse.x + drawingEllipse.width/2,
+      y: drawingEllipse.y + drawingEllipse.height/2,
+      width: x - sx,
+      height: y - sy,
       fill: "transparent",
       stroke: "black",
       strokeWidth: 0.75,
@@ -40,11 +42,11 @@ export class EllipseTool {
 
     const updatedShapes = {
       ...shapes,
-      ellipses: [...shapes.ellipses, ellipseToAdd],
+      ellipses: [...shapes.ellipses, ellipsesToAdd],
     };
 
     setShapes(updatedShapes);
-    setSelectedShapes({ ...selectedShapes, ellipses: [ellipseToAdd.id] });
+    setSelectedShapes({...selectedShapes, ellipses: [ellipsesToAdd.id]});
   }
 }
 
