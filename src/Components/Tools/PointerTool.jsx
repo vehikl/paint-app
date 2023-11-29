@@ -66,7 +66,29 @@ export class PointerTool {
         stroke: "#1e90ff",
       });
 
-      setSelectedShapes({ ...selectedShapes, rectangles: selectedRects, ellipses: selectedEllipses });
+      const selectedTexts = shapes.texts
+        .filter((text) => {
+          const textBounds = {
+            left: text.x,
+            top: text.y,
+            right: text.x + text.width,
+            bottom: text.y + text.height,
+          };
+
+          return !(
+            textBounds.right < sx ||
+            textBounds.left > ex ||
+            textBounds.bottom < sy ||
+            textBounds.top > ey
+          );
+        });
+
+      setSelectedShapes({
+        ...selectedShapes,
+        rectangles: selectedRects,
+        ellipses: selectedEllipses,
+        texts: selectedTexts,
+      });
     }
   }
 

@@ -1,9 +1,9 @@
 export class TextTool {
-  handleMouseDown(e, texts, setTexts) {
+  handleMouseDown(e, shapes, setShapes) {
     const { x, y } = e.target.getStage().getPointerPosition();
     const defaultText = { x, y, fontSize: 16, text: "Type Here" };
 
-    setTexts([...texts, defaultText]);
+    setShapes({ ...shapes, texts: [...shapes.texts, defaultText] });
   }
 
   handleMouseMove() {
@@ -12,10 +12,11 @@ export class TextTool {
   handleMouseUp() {
   }
 
-  handleTextDoubleClick(index, texts, setTexts) {
-    const newTexts = texts.map((text, i) =>
+  handleTextDoubleClick(index, shapes, setShapes) {
+    const newTexts = shapes.texts.map((text, i) =>
       i === index ? { ...text, editing: true } : text
     );
-    setTexts(newTexts);
+
+    setShapes({ ...shapes, texts: newTexts });
   }
 }

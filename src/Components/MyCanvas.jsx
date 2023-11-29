@@ -24,7 +24,6 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
   const [drawingEllipse, setDrawingEllipse] = useState(null);
   const [selectedShapes, setSelectedShapes] = useState(initialSelectedShapes);
   const [lines, setLines] = useState([]);
-  const [texts, setTexts] = useState([]);
 
   const isDrawing = useRef(false);
 
@@ -124,11 +123,11 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
       handleMouseUp: (e) => pointerTool.handleMouseUp(setDrawingRectangle),
     },
     text: {
-      handleMouseDown: (e) => textTool.handleMouseDown(e, texts, setTexts),
+      handleMouseDown: (e) => textTool.handleMouseDown(e, shapes, setShapes),
       handleMouseMove: (e) => textTool.handleMouseMove(),
       handleMouseUp: () => textTool.handleMouseUp(),
       handleTextDoubleClick: (index) =>
-        textTool.handleTextDoubleClick(index, texts, setTexts),
+        textTool.handleTextDoubleClick(index, shapes, setShapes),
     },
   };
 
@@ -226,8 +225,11 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
         ))}
       </Layer>
       <Layer>
-        {texts.map((text, index) => (
-          <Text key={index} {...text} draggable={mouseState === "pointer"} />
+        {shapes.texts.map((text, index) => (
+          <Text 
+          key={index} {...text} 
+          draggable={mouseState === "pointer"} 
+          />
         ))}
       </Layer>
     </Stage>
