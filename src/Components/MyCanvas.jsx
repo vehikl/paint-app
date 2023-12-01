@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Layer, Stage, Rect, Line, Text, Ellipse } from "react-konva";
 import { Rectangle } from "./Shapes/Rectangle";
 import { EllipseComponent } from "./Shapes/Ellipse";
+
 import {
   PenTool,
   PointerTool,
@@ -18,6 +19,15 @@ const initialSelectedShapes = {
   texts: [],
 };
 
+const cursorTypes = {
+  pen: `crosshair`,
+  eraser: "default",
+  rectangle: "crosshair",
+  ellipse: "crosshair",
+  pointer: "default",
+  text: "text",
+};
+
 export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
   const [isAdjusting, setIsAdjusting] = useState(false);
   const [drawingRectangle, setDrawingRectangle] = useState(null);
@@ -26,9 +36,12 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
 
   const isDrawing = useRef(false);
 
+  console.log(cursorTypes[mouseState]);
   useEffect(() => {
     const handleDeleteKeyPress = (event) => {
       if (event.keyCode === 8) {
+
+        console.log(shapes.lines, selectedShapes.lines);
         const updatedShapes = {
           ...shapes,
           rectangles: shapes.rectangles.filter(
@@ -36,6 +49,12 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
           ),
           ellipses: shapes.ellipses.filter(
             (ellps) => !selectedShapes.ellipses.includes(ellps.id)
+          ),
+          lines: shapes.lines.filter(
+            (line) => !selectedShapes.lines.includes(line.id)
+          ),
+          texts: shapes.texts.filter(
+            (text) => !selectedShapes.texts.includes(text.id)
           ),
         };
         setShapes(updatedShapes);
@@ -139,12 +158,7 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
       height={window.innerHeight}
       className={"myCanvas"}
       style={{
-        cursor:
-          mouseState === "pointer"
-            ? "default"
-            : mouseState === "text"
-            ? "text"
-            : "crosshair",
+        cursor: cursorTypes[mouseState] || "default",
       }}
     >
       <Layer>{drawingRectangle && <Rect {...drawingRectangle} />}</Layer>

@@ -81,13 +81,33 @@ export class PointerTool {
             textBounds.bottom < sy ||
             textBounds.top > ey
           );
-        });
+        })
+        .map((text) => text.id);
+
+        const selectedLines = shapes.lines
+        .filter((line) => {
+          const lineBounds = {
+            left: line.x,
+            top: line.y,
+            right: line.x + line.width,
+            bottom: line.y + line.height,
+          };
+
+          return !(
+            lineBounds.right < sx ||
+            lineBounds.left > ex ||
+            lineBounds.bottom < sy ||
+            lineBounds.top > ey
+          );
+        })
+        .map((line) => line.id);
 
       setSelectedShapes({
         ...selectedShapes,
         rectangles: selectedRects,
         ellipses: selectedEllipses,
         texts: selectedTexts,
+        lines: selectedLines,
       });
     }
   }

@@ -14,7 +14,7 @@ export class PenTool {
     let lastLine = shapes.lines[shapes.lines.length - 1];
 
     lastLine.points = lastLine.points.concat([point.x, point.y]);
-
+    lastLine.id = Math.random().toString(36).substring(2, 6);
     shapes.lines.splice(shapes.lines.length - 1, 1, lastLine);
     setShapes({...shapes, lines: shapes.lines.concat()});
   }
