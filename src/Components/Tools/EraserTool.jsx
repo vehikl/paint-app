@@ -1,9 +1,9 @@
 export class EraserTool {
-  handleMouseDown(e, isDrawing, setLines, lines, mouseState) {
+  handleMouseDown(e, isDrawing, setShapes, shapes, mouseState) {
     isDrawing.current = true;
   }
 
-  handleMouseMove(e, isDrawing, lines, setLines) {
+  handleMouseMove(e, isDrawing, shapes, setShapes) {
     if (!isDrawing.current) {
       return;
     }
@@ -12,7 +12,7 @@ export class EraserTool {
 
     const newLines = [];
 
-    lines.forEach((line) => {
+    shapes.lines.forEach((line) => {
       const points = line.points;
       const updatedPoints = [];
 
@@ -35,7 +35,7 @@ export class EraserTool {
       }
     });
 
-    setLines(newLines);
+    setShapes({ ...shapes, lines: newLines });
   }
 
   handleMouseUp(isDrawing) {

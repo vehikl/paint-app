@@ -23,7 +23,6 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
   const [drawingRectangle, setDrawingRectangle] = useState(null);
   const [drawingEllipse, setDrawingEllipse] = useState(null);
   const [selectedShapes, setSelectedShapes] = useState(initialSelectedShapes);
-  const [lines, setLines] = useState([]);
 
   const isDrawing = useRef(false);
 
@@ -62,16 +61,16 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
   const tools = {
     pen: {
       handleMouseDown: (e) =>
-        penTool.handleMouseDown(e, isDrawing, setLines, lines, mouseState),
+        penTool.handleMouseDown(e, isDrawing, setShapes, shapes, mouseState),
       handleMouseMove: (e) =>
-        penTool.handleMouseMove(e, isDrawing, lines, setLines),
+        penTool.handleMouseMove(e, isDrawing, shapes, setShapes),
       handleMouseUp: (e) => penTool.handleMouseUp(isDrawing),
     },
     eraser: {
       handleMouseDown: (e) =>
-        eraserTool.handleMouseDown(e, isDrawing, setLines, lines, mouseState),
+        eraserTool.handleMouseDown(e, isDrawing, setShapes, shapes, mouseState),
       handleMouseMove: (e) =>
-        eraserTool.handleMouseMove(e, isDrawing, lines, setLines),
+        eraserTool.handleMouseMove(e, isDrawing, shapes, setShapes),
       handleMouseUp: (e) => eraserTool.handleMouseUp(isDrawing),
     },
 
@@ -211,7 +210,7 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
             setIsAdjusting={setIsAdjusting}
           />
         ))}
-        {lines.map((line, i) => (
+        {shapes.lines.map((line, i) => (
           <Line
             key={i}
             points={line.points}
