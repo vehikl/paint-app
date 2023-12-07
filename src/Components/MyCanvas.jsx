@@ -59,6 +59,16 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
 
         setSelectedShapes(initialSelectedShapes);
       }
+
+      // if command + a/ control a is pressed, select all shapes
+      if (event.keyCode === 65 && (event.ctrlKey || event.metaKey)) {
+        setSelectedShapes({
+          rectangles: shapes.rectangles.map((rect) => rect.id),
+          ellipses: shapes.ellipses.map((ellps) => ellps.id),
+          lines: shapes.lines.map((line) => line.id),
+          texts: shapes.texts.map((text) => text.id),
+        });
+      }
     };
 
     document.addEventListener("keydown", handleDeleteKeyPress);
