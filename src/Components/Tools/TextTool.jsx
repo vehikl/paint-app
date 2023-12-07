@@ -1,9 +1,10 @@
 export class TextTool {
-  handleMouseDown(e, shapes, setShapes) {
+  handleMouseDown(e, shapes, setShapes, setSelectedShapes) {
     const { x, y } = e.target.getStage().getPointerPosition();
-    const defaultText = { x, y, fontSize: 16, text: "Type Here" };
+    const defaultText = { x, y, fontSize: 16, text: "Type Here adasdasdasdsada" };
     defaultText.id = Math.random().toString(36).substring(2, 6);
     setShapes({ ...shapes, texts: [...shapes.texts, defaultText] });
+    setSelectedShapes({ texts: [defaultText.id] });
   }
 
   handleMouseMove() {

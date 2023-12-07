@@ -11,6 +11,7 @@ import {
   EraserTool,
   TextTool,
 } from "./Tools";
+import { TextShape } from "./Shapes/TextShape";
 
 const initialSelectedShapes = {
   rectangles: [],
@@ -36,12 +37,9 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
 
   const isDrawing = useRef(false);
 
-  console.log(cursorTypes[mouseState]);
   useEffect(() => {
     const handleDeleteKeyPress = (event) => {
       if (event.keyCode === 8) {
-
-        console.log(shapes.lines, selectedShapes.lines);
         const updatedShapes = {
           ...shapes,
           rectangles: shapes.rectangles.filter(
@@ -141,13 +139,14 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
       handleMouseUp: (e) => pointerTool.handleMouseUp(setDrawingRectangle),
     },
     text: {
-      handleMouseDown: (e) => textTool.handleMouseDown(e, shapes, setShapes),
+      handleMouseDown: (e) => textTool.handleMouseDown(e, shapes, setShapes, setSelectedShapes),
       handleMouseMove: (e) => textTool.handleMouseMove(),
       handleMouseUp: () => textTool.handleMouseUp(),
       handleTextDoubleClick: (index) =>
         textTool.handleTextDoubleClick(index, shapes, setShapes),
     },
   };
+
 
   return (
     <Stage
@@ -163,15 +162,17 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
     >
       <Layer>{drawingRectangle && <Rect {...drawingRectangle} />}</Layer>
       <Layer>
-        {drawingEllipse && <Ellipse
-          x={drawingEllipse.x + drawingEllipse.width/2}
-          y={drawingEllipse.y + drawingEllipse.height/2}
-          radiusX={drawingEllipse.width/2}
-          radiusY={drawingEllipse.height / 2}
-          fill="transparent"
-          stroke="black"
-          strokeWidth={0.75}
-        />}
+        {drawingEllipse && (
+          <Ellipse
+            x={drawingEllipse.x + drawingEllipse.width / 2}
+            y={drawingEllipse.y + drawingEllipse.height / 2}
+            radiusX={drawingEllipse.width / 2}
+            radiusY={drawingEllipse.height / 2}
+            fill="transparent"
+            stroke="black"
+            strokeWidth={0.75}
+          />
+        )}
       </Layer>
       <Layer>
         {shapes.rectangles.map((rect, index) => (
@@ -238,12 +239,30 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
         ))}
       </Layer>
       <Layer>
-        {shapes.texts.map((text, index) => (
-          <Text 
-          key={index} {...text} 
-          draggable={mouseState === "pointer"} 
-          />
-        ))}
+        {shapes.texts.map((text, index) => {
+          return (
+            <TextShape
+              x={text.x}
+              y={text.y}
+              draggable={mouseState === "pointer"}
+              isSelected={selectedShapes.texts?.includes(text.id)}
+              key={index}
+              text={text}
+              onSelect={(e) =>
+                textTool.handleTextDoubleClick(index, shapes, setShapes)
+              }
+              onChange={(newAttrs) => {
+                const updatedShapes = {
+                  ...shapes,
+                  texts: shapes.texts.slice(),
+                };
+                updatedShapes.texts[index] = newAttrs;
+                setShapes(updatedShapes);
+              }}
+              setIsAdjusting={setIsAdjusting}
+              />
+          );
+        })}
       </Layer>
     </Stage>
   );
