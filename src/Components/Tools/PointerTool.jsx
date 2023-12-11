@@ -14,10 +14,25 @@ export class PointerTool {
     setSelectedShapes
   ) {
     if (drawingRectangle && !isAdjusting) {
-      const sx = Math.min(drawingRectangle.x, e.evt.layerX);
-      const sy = Math.min(drawingRectangle.y, e.evt.layerY);
       const ex = Math.max(drawingRectangle.x, e.evt.layerX);
       const ey = Math.max(drawingRectangle.y, e.evt.layerY);
+
+
+      let sx = drawingRectangle.x;
+      let sy = drawingRectangle.y;
+      const { x, y } = e.target.getStage().getPointerPosition();
+      setDrawingRectangle({
+        x: sx,
+        y: sy,
+        width: x - sx,
+        height: y - sy,
+        fill: "rgba(30, 144, 255, 0.2)",
+        strokeWidth: 0.75,
+        stroke: "#1e90ff",
+      });
+
+      sx = Math.min(drawingRectangle.x, e.evt.layerX);
+      sy = Math.min(drawingRectangle.y, e.evt.layerY);
 
       const selectedRects = shapes.rectangles
         .filter((rect) => {
@@ -40,10 +55,10 @@ export class PointerTool {
       const selectedEllipses = shapes.ellipses
         .filter((ellps) => {
           const ellpsBounds = {
-            left: ellps.x,
-            top: ellps.y,
-            right: ellps.x + ellps.width,
-            bottom: ellps.y + ellps.height,
+            left: ellps.x - ellps.width/2,
+            top: ellps.y - ellps.height/2,
+            right: ellps.x + ellps.width + ellps.width/2,
+            bottom: ellps.y + ellps.height + ellps.height/2,
           };
 
           return !(
@@ -54,17 +69,6 @@ export class PointerTool {
           );
         })
         .map((ellps) => ellps.id);
-
-      const { x, y } = e.target.getStage().getPointerPosition();
-      setDrawingRectangle({
-        x: sx,
-        y: sy,
-        width: x - sx,
-        height: y - sy,
-        fill: "rgba(30, 144, 255, 0.2)",
-        strokeWidth: 0.75,
-        stroke: "#1e90ff",
-      });
 
       const selectedTexts = shapes.texts
         .filter((text) => {
