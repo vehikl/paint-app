@@ -174,8 +174,8 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
       <Layer>
         {drawingEllipse && (
           <Ellipse
-            x={drawingEllipse.x + drawingEllipse.width / 2}
-            y={drawingEllipse.y + drawingEllipse.height / 2}
+            x={drawingEllipse.negativeWidth ? drawingEllipse.x - drawingEllipse.width  / 2: drawingEllipse.x + drawingEllipse.width / 2}
+            y={drawingEllipse.negativeHeight ? drawingEllipse.x - drawingEllipse.width  / 2 : drawingEllipse.y + drawingEllipse.height / 2}
             radiusX={drawingEllipse.width / 2}
             radiusY={drawingEllipse.height / 2}
             fill="transparent"
@@ -231,6 +231,8 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
             isSelected={selectedShapes?.ellipses?.includes(ellipse.id)}
             key={index}
             {...ellipse}
+            x={ellipse.negativeWidth ? ellipse.x - ellipse.width / 2 : ellipse.x + ellipse.width / 2}
+            y={ellipse.negativeHeight ? ellipse.y - ellipse.height / 2 : ellipse.y + ellipse.height / 2}
             draggable={mouseState === "pointer"}
             setIsAdjusting={setIsAdjusting}
           />

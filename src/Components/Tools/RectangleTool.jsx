@@ -58,6 +58,6 @@ export class RectangleTool {
 
   handleSelectShape(e, selectedShapes, setSelectedShapes, setIsAdjusting) {
     setSelectedShapes({ ...selectedShapes, rectangles: [e.target.attrs.id] });
-    setIsAdjusting(true); // Set the flag to true when adjusting
+    setIsAdjusting(true);
   }
 }
