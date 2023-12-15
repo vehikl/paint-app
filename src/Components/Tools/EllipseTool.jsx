@@ -34,8 +34,6 @@ export class EllipseTool {
     setSelectedShapes
   ) {
     if (drawingEllipse) {
-      const sx = drawingEllipse.x;
-      const sy = drawingEllipse.y;
       const { x, y } = e.target.getStage().getPointerPosition();
 
       const newWidth = x - drawingEllipse.x;
@@ -46,8 +44,8 @@ export class EllipseTool {
 
       const ellipsesToAdd = {
         id: Math.random().toString(36).substring(2, 6),
-        x: drawingEllipse.x + drawingEllipse.width / 2,
-        y: drawingEllipse.y + drawingEllipse.height / 2,
+        x: drawingEllipse.x,
+        y: drawingEllipse.y,
         width: width,
         height: height,
         fill: "transparent",

@@ -174,8 +174,8 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
       <Layer>
         {drawingEllipse && (
           <Ellipse
-            x={drawingEllipse.negativeWidth ? drawingEllipse.x - drawingEllipse.width  / 2: drawingEllipse.x + drawingEllipse.width / 2}
-            y={drawingEllipse.negativeHeight ? drawingEllipse.x - drawingEllipse.width  / 2 : drawingEllipse.y + drawingEllipse.height / 2}
+            x={drawingEllipse.negativeWidth ? drawingEllipse.x - drawingEllipse.width / 2 : drawingEllipse.x + drawingEllipse.width / 2}
+            y={drawingEllipse.negativeHeight ? drawingEllipse.y - drawingEllipse.height  / 2 : drawingEllipse.y + drawingEllipse.height / 2}
             radiusX={drawingEllipse.width / 2}
             radiusY={drawingEllipse.height / 2}
             fill="transparent"
