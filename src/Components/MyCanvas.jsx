@@ -134,22 +134,29 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
         ),
     },
     pointer: {
-      handleMouseDown: (e) =>
-        pointerTool.handleMouseDown(e, setDrawingRectangle),
-      handleMouseMove: (e) =>
-        pointerTool.handleMouseMove(
-          e,
-          drawingRectangle,
-          setDrawingRectangle,
-          isAdjusting,
-          shapes,
-          selectedShapes,
-          setSelectedShapes
-        ),
+      handleMouseDown: (e) => {
+        if (!isAdjusting) {
+          pointerTool.handleMouseDown(e, setDrawingRectangle);
+        }
+      },
+      handleMouseMove: (e) => {
+        if (!isAdjusting) {
+          pointerTool.handleMouseMove(
+            e,
+            drawingRectangle,
+            setDrawingRectangle,
+            isAdjusting,
+            shapes,
+            selectedShapes,
+            setSelectedShapes
+          );
+        }
+      },
       handleMouseUp: (e) => pointerTool.handleMouseUp(setDrawingRectangle),
     },
     text: {
-      handleMouseDown: (e) => textTool.handleMouseDown(e, shapes, setShapes, setSelectedShapes),
+      handleMouseDown: (e) =>
+        textTool.handleMouseDown(e, shapes, setShapes, setSelectedShapes),
       handleMouseMove: (e) => textTool.handleMouseMove(),
       handleMouseUp: () => textTool.handleMouseUp(),
       handleTextDoubleClick: (index) =>
@@ -174,8 +181,16 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
       <Layer>
         {drawingEllipse && (
           <Ellipse
-            x={drawingEllipse.negativeWidth ? drawingEllipse.x - drawingEllipse.width / 2 : drawingEllipse.x + drawingEllipse.width / 2}
-            y={drawingEllipse.negativeHeight ? drawingEllipse.y - drawingEllipse.height  / 2 : drawingEllipse.y + drawingEllipse.height / 2}
+            x={
+              drawingEllipse.negativeWidth
+                ? drawingEllipse.x - drawingEllipse.width / 2
+                : drawingEllipse.x + drawingEllipse.width / 2
+            }
+            y={
+              drawingEllipse.negativeHeight
+                ? drawingEllipse.y - drawingEllipse.height / 2
+                : drawingEllipse.y + drawingEllipse.height / 2
+            }
             radiusX={drawingEllipse.width / 2}
             radiusY={drawingEllipse.height / 2}
             fill="transparent"
@@ -202,6 +217,7 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
               };
               updatedShapes.rectangles[index] = newAttrs;
               setShapes(updatedShapes);
+              setIsAdjusting(false);
             }}
             isSelected={selectedShapes.rectangles?.includes(rect.id)}
             key={index}
@@ -225,14 +241,23 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
                 ...shapes,
                 ellipses: shapes.ellipses.slice(),
               };
-              updatedShapes.rectangles[index] = newAttrs;
+              updatedShapes.ellipses[index] = newAttrs;
               setShapes(updatedShapes);
+              setIsAdjusting(false);
             }}
             isSelected={selectedShapes?.ellipses?.includes(ellipse.id)}
             key={index}
             {...ellipse}
-            x={ellipse.negativeWidth ? ellipse.x - ellipse.width / 2 : ellipse.x + ellipse.width / 2}
-            y={ellipse.negativeHeight ? ellipse.y - ellipse.height / 2 : ellipse.y + ellipse.height / 2}
+            x={
+              ellipse.negativeWidth
+                ? ellipse.x - ellipse.width / 2
+                : ellipse.x + ellipse.width / 2
+            }
+            y={
+              ellipse.negativeHeight
+                ? ellipse.y - ellipse.height / 2
+                : ellipse.y + ellipse.height / 2
+            }
             draggable={mouseState === "pointer"}
             setIsAdjusting={setIsAdjusting}
           />
@@ -261,7 +286,12 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
               key={index}
               text={text}
               onSelect={(e) =>
-                textTool.handleTextDoubleClick(index, shapes, setShapes)
+                textTool.handleSelectShape(
+                  e,
+                  selectedShapes,
+                  setSelectedShapes,
+                  setIsAdjusting
+                )
               }
               onChange={(newAttrs) => {
                 const updatedShapes = {
@@ -270,9 +300,10 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
                 };
                 updatedShapes.texts[index] = newAttrs;
                 setShapes(updatedShapes);
+                setIsAdjusting(false);
               }}
               setIsAdjusting={setIsAdjusting}
-              />
+            />
           );
         })}
       </Layer>

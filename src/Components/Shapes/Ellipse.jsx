@@ -33,22 +33,22 @@ export const EllipseComponent = ({
           // reset scale
           node.scaleX(1);
           node.scaleY(1);
-
+          
           onChange({
             ...props,
-            x: node.x(),
-            y: node.y(),
+            x: node.x() - node.width() / 2,
+            y: node.y() - node.height() / 2,
             width: Math.max(5, node.width() * scaleX),
             height: Math.max(5, node.height() * scaleY),
             rotation: node.rotation(),
           });
-          setIsAdjusting(false);
         }}
       />
       {isSelected && (
         <Transformer
           ref={trRef}
           boundBoxFunc={(oldBox, newBox) => {
+           setIsAdjusting(true)
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
             }

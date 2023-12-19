@@ -20,4 +20,8 @@ export class TextTool {
 
     setShapes({ ...shapes, texts: newTexts });
   }
+
+  handleSelectShape(e, selectedShapes, setSelectedShapes) {
+    setSelectedShapes({ ...selectedShapes, texts: [e.target.attrs.id] });
+  }
 }

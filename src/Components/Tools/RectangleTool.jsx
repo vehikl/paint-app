@@ -14,7 +14,6 @@ export class RectangleTool {
         y: sy,
         width: x - sx,
         height: y - sy,
-        strokeWidth: 0.75,
         stroke: "black",
         dash: [10, 5],
       });

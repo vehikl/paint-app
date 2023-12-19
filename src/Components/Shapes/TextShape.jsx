@@ -52,13 +52,13 @@ export const TextShape = ({
             height: Math.max(node.height() * scaleY),
             rotation: node.rotation(),
           });
-          setIsAdjusting(false);
         }}
       />
       {isSelected && (
         <Transformer
           ref={trRef}
           boundBoxFunc={(oldBox, newBox) => {
+            setIsAdjusting(true)
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
             }
