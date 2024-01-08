@@ -4,6 +4,7 @@ import { PiCursorBold, PiRectangleBold, PiCircleBold } from "react-icons/pi";
 import { BsVectorPen } from "react-icons/bs";
 import { RiImageAddLine } from "react-icons/ri";
 import { CgFormatText } from "react-icons/cg";
+import { Modal, FileUploader } from "@twizzle-library/twizzle-library";
 import NavbarItem from "./NavbarItem"; // Import the NavbarItem component
 
 const icons = [
@@ -32,8 +33,15 @@ export const Navbar = ({ mouseState, setMouseState }) => {
   const [showChildren, setShowChildren] = useState(false);
   const [currentIcon, setCurrentIcon] = useState(null);
 
+  const [imageModal, setImageModal] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(null);
+
   const handleMouseStateChange = (state, icon) => {
     setMouseState(state);
+
+    if (state == "image") {
+      setImageModal(true);
+    }
     setCurrentIcon(icon);
   };
 
@@ -62,6 +70,8 @@ export const Navbar = ({ mouseState, setMouseState }) => {
     };
   }, [currentIcon, handleMouseStateChange]);
 
+  const images = JSON.parse(localStorage.getItem("images")) || [];
+
   return (
     <div className="navbarContainer">
       <div className="navbar">
@@ -86,6 +96,45 @@ export const Navbar = ({ mouseState, setMouseState }) => {
             {children}
           </NavbarItem>
         ))}
+        {imageModal && (
+          <Modal
+            onClose={() => setImageModal(false)}
+            style={{
+              backgroundColor: "red",
+            }}
+            title="Upload Image"
+            onConfirm={() => {
+              setImageModal(false);
+
+              localStorage.setItem(
+                "images",
+                JSON.stringify([...images, uploadedImage])
+              );
+            
+              console.log("Images after update:", JSON.parse(localStorage.getItem("images")));
+              setMouseState("pointer");
+            }}
+          >
+            <FileUploader
+              style={{ width: "100%", margin: "0 auto" }}
+              fileTypes={["image/*"]}
+              onUpload={(fileList) => {
+                const file = fileList[0];
+
+                if (file) {
+                  const reader = new FileReader();
+                  reader.readAsDataURL(file);
+                  reader.onload = () => {
+                    setUploadedImage({
+                      src: reader.result,
+                      name: file.name,
+                    });
+                  };
+                }
+              }}
+            />
+          </Modal>
+        )}
       </div>
     </div>
   );
