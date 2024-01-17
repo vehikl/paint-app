@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Layer, Stage, Rect, Line, Text, Ellipse } from "react-konva";
+import { Layer, Stage, Rect, Line, Ellipse } from "react-konva";
 import { Rectangle } from "./Shapes/Rectangle";
 import { EllipseComponent } from "./Shapes/Ellipse";
+import { ImageComponent } from "./Shapes/Image";
 
 import {
   PenTool,
@@ -29,7 +30,13 @@ const cursorTypes = {
   text: "text",
 };
 
-export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
+export const MyCanvas = ({
+  mouseState,
+  shapes,
+  setShapes,
+  images,
+  setImages,
+}) => {
   const [isAdjusting, setIsAdjusting] = useState(false);
   const [drawingRectangle, setDrawingRectangle] = useState(null);
   const [drawingEllipse, setDrawingEllipse] = useState(null);
@@ -162,8 +169,12 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
       handleTextDoubleClick: (index) =>
         textTool.handleTextDoubleClick(index, shapes, setShapes),
     },
+    image: {
+      handleMouseDown: (e) => {},
+      handleMouseMove: (e) => {},
+      handleMouseUp: (e) => {},
+    },
   };
-
 
   return (
     <Stage
@@ -200,6 +211,15 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
         )}
       </Layer>
       <Layer>
+        {images.map((image, index) => (
+          <ImageComponent
+            src={image.src}
+            key={index}
+            draggable={mouseState === "pointer"}
+            isSelected={true}
+            setIsAdjusting={setIsAdjusting}
+          />
+        ))}
         {shapes.rectangles.map((rect, index) => (
           <Rectangle
             onSelect={(e) =>

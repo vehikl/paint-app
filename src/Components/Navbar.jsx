@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FaEraser, FaFile } from "react-icons/fa";
 import { PiCursorBold, PiRectangleBold, PiCircleBold } from "react-icons/pi";
 import { BsVectorPen } from "react-icons/bs";
@@ -29,7 +29,7 @@ const icons = [
   { Icon: RiImageAddLine, state: "image" },
 ];
 
-export const Navbar = ({ mouseState, setMouseState }) => {
+export const Navbar = ({ mouseState, setMouseState, setImages }) => {
   const [showChildren, setShowChildren] = useState(false);
   const [currentIcon, setCurrentIcon] = useState(null);
 
@@ -70,7 +70,11 @@ export const Navbar = ({ mouseState, setMouseState }) => {
     };
   }, [currentIcon, handleMouseStateChange]);
 
-  const images = JSON.parse(localStorage.getItem("images")) || [];
+  // const images = JSON.parse(localStorage.getItem("images")) || [];
+
+  const images = useMemo(() => {
+    return JSON.parse(localStorage.getItem("images")) || [];
+  }, []);
 
   return (
     <div className="navbarContainer">
@@ -110,9 +114,7 @@ export const Navbar = ({ mouseState, setMouseState }) => {
                 "images",
                 JSON.stringify([...images, uploadedImage])
               );
-            
-              console.log("Images after update:", JSON.parse(localStorage.getItem("images")));
-              setMouseState("pointer");
+              setImages([...images, uploadedImage]);
             }}
           >
             <FileUploader
