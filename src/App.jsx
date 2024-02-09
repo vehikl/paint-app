@@ -1,32 +1,36 @@
-
-import './Resources/App.css'
-import {MyCanvas} from "./components/MyCanvas";
-import {Navbar} from "./components/Navbar";
-import {useState} from "react";
+import './Resources/App.css';
+import { MyCanvas } from './components/MyCanvas';
+import { Navbar } from './components/Navbar';
+import { useState } from 'react';
 
 function App() {
+    const localStorageImages = localStorage.getItem('images');
 
     const initialShapes = {
         rectangles: [],
         ellipses: [],
         lines: [],
         texts: [],
+        images: localStorageImages ? JSON.parse(localStorageImages) : [],
     };
 
     const [mouseState, setMouseState] = useState('rectangle');
     const [shapes, setShapes] = useState(initialShapes);
 
-    const localStorageImages = localStorage.getItem("images");
-    const [images, setImages] = useState(localStorageImages ? JSON.parse(localStorageImages) : []);
-
-    console.log(images);
-
     return (
         <div className="container">
-            <Navbar mouseState={mouseState} setMouseState={setMouseState} setImages={setImages} />
-            <MyCanvas mouseState={mouseState} shapes={shapes}  setShapes={setShapes} images={images} />
+            <Navbar
+                mouseState={mouseState}
+                setMouseState={setMouseState}
+                setShapes={setShapes}
+            />
+            <MyCanvas
+                mouseState={mouseState}
+                shapes={shapes}
+                setShapes={setShapes}
+            />
         </div>
-    )
+    );
 }
 
-export default App
+export default App;
