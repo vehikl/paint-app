@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { FaEraser, FaFile } from 'react-icons/fa';
 import { PiCursorBold, PiRectangleBold, PiCircleBold } from 'react-icons/pi';
 import { BsVectorPen } from 'react-icons/bs';
 import { RiImageAddLine } from 'react-icons/ri';
 import { CgFormatText } from 'react-icons/cg';
 import { Modal, FileUploader } from '@twizzle-library/twizzle-library';
-import NavbarItem from './NavbarItem'; // Import the NavbarItem component
+import NavbarItem from './NavbarItem';
 
 const icons = [
     { Icon: PiCursorBold, state: 'pointer' },
@@ -36,14 +36,14 @@ export const Navbar = ({ mouseState, setMouseState, setShapes }) => {
     const [imageModal, setImageModal] = useState(false);
     const [uploadedImage, setUploadedImage] = useState(null);
 
-    const handleMouseStateChange = (state, icon) => {
+    const handleMouseStateChange = useCallback((state, icon) => {
         setMouseState(state);
 
         if (state == 'image') {
             setImageModal(true);
         }
         setCurrentIcon(icon);
-    };
+    }, [setMouseState]);
 
     const handleMouseLeave = () => {
         setShowChildren(false);
@@ -112,7 +112,12 @@ export const Navbar = ({ mouseState, setMouseState, setShapes }) => {
 
                             localStorage.setItem(
                                 'images',
-                                JSON.stringify([...images, uploadedImage])
+                                JSON.stringify(
+                                    images.concat({
+                                        src: uploadedImage.src,
+                                        name: uploadedImage.name,
+                                    })
+                                )
                             );
 
                             setShapes((prev) => ({
@@ -134,6 +139,7 @@ export const Navbar = ({ mouseState, setMouseState, setShapes }) => {
                                         setUploadedImage({
                                             src: reader.result,
                                             name: file.name,
+                                            id: Math.random().toString(36).substring(2, 6),
                                         });
                                     };
                                 }
