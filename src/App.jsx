@@ -1,7 +1,8 @@
 import './Resources/App.css';
-import { MyCanvas } from './components/MyCanvas';
-import { Navbar } from './components/Navbar';
+import { MyCanvas } from './Components/MyCanvas';
+import { Navbar } from './Components/Navbar';
 import { useState } from 'react';
+import { Footer } from './Components/Footer';
 
 function App() {
     const localStorageImages = localStorage.getItem('images');
@@ -16,6 +17,7 @@ function App() {
 
     const [mouseState, setMouseState] = useState('rectangle');
     const [shapes, setShapes] = useState(initialShapes);
+    const [zoom, setZoom] = useState(100);
 
     return (
         <div className="container">
@@ -28,7 +30,9 @@ function App() {
                 mouseState={mouseState}
                 shapes={shapes}
                 setShapes={setShapes}
+                zoom={zoom}
             />
+            <Footer zoom={zoom} setZoom={setZoom} />
         </div>
     );
 }

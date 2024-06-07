@@ -30,7 +30,7 @@ const cursorTypes = {
   text: "text",
 };
 
-export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
+export const MyCanvas = ({ mouseState, shapes, setShapes, zoom }) => {
   const [isAdjusting, setIsAdjusting] = useState(false);
   const [drawingRectangle, setDrawingRectangle] = useState(null);
   const [drawingEllipse, setDrawingEllipse] = useState(null);
@@ -268,6 +268,8 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
     loadImage();
   }, [shapes.images]);
 
+  const scaleMultiplier = zoom / 100;
+
   return (
     <Stage
       onMouseDown={(e) => tools[mouseState].handleMouseDown(e)}
@@ -276,6 +278,8 @@ export const MyCanvas = ({ mouseState, shapes, setShapes }) => {
       width={window.innerWidth}
       height={window.innerHeight}
       className={"myCanvas"}
+      scaleX={scaleMultiplier}
+      scaleY={scaleMultiplier}
       style={{
         cursor: cursorTypes[mouseState] || "default",
       }}

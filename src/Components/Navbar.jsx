@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { FaEraser, FaFile } from 'react-icons/fa';
+import { FaAlignJustify, FaEraser, FaFile, FaHamburger } from 'react-icons/fa';
 import { PiCursorBold, PiRectangleBold, PiCircleBold } from 'react-icons/pi';
 import { BsVectorPen } from 'react-icons/bs';
 import { RiImageAddLine } from 'react-icons/ri';
@@ -77,76 +77,84 @@ export const Navbar = ({ mouseState, setMouseState, setShapes }) => {
     }, []);
 
     return (
-        <div className="navbarContainer">
-            <div className="navbar">
-                <FaFile className="navbarIcon" />
-                {icons.map(({ Icon, state, children }) => (
-                    <NavbarItem
-                        key={state}
-                        Icon={Icon}
-                        state={state}
-                        mouseState={mouseState}
-                        currentIcon={currentIcon}
-                        handleMouseStateChange={handleMouseStateChange}
-                        handleHover={handleHover}
-                        showChildren={showChildren[state]}
-                        setShowChildren={(value) =>
-                            setShowChildren({ ...showChildren, [state]: value })
-                        }
-                        handleMouseLeave={handleMouseLeave}
-                        className="navbarIcon"
-                        childIcons={children}
-                    >
-                        {children}
-                    </NavbarItem>
-                ))}
-                {imageModal && (
-                    <Modal
-                        onClose={() => setImageModal(false)}
-                        style={{
-                            backgroundColor: 'red',
-                        }}
-                        title="Upload Image"
-                        onConfirm={() => {
-                            setImageModal(false);
-
-                            localStorage.setItem(
-                                'images',
-                                JSON.stringify(
-                                    images.concat({
-                                        src: uploadedImage.src,
-                                        name: uploadedImage.name,
-                                    })
-                                )
-                            );
-
-                            setShapes((prev) => ({
-                                ...prev,
-                                images: [...images, uploadedImage],
-                            }));
-                        }}
-                    >
-                        <FileUploader
-                            style={{ width: '100%', margin: '0 auto' }}
-                            fileTypes={['image/*']}
-                            onUpload={(fileList) => {
-                                const file = fileList[0];
-
-                                if (file) {
-                                    const reader = new FileReader();
-                                    reader.readAsDataURL(file);
-                                    reader.onload = () => {
-                                        setUploadedImage({
-                                            src: reader.result,
-                                            name: file.name,
-                                            id: Math.random().toString(36).substring(2, 6),
-                                        });
-                                    };
-                                }
+        <div className="navbarWrapper">
+             <div className="navbarHamburgerMenu">
+                <FaAlignJustify className="navbarIcon" onClick={() => window.alert('Coming soon!')} />
+            </div>
+            <div className="navbarContainer">
+                <div className="navbar">
+                    <FaFile className="navbarIcon" />
+                    {icons.map(({ Icon, state, children }) => (
+                        <NavbarItem
+                            key={state}
+                            Icon={Icon}
+                            state={state}
+                            mouseState={mouseState}
+                            currentIcon={currentIcon}
+                            handleMouseStateChange={handleMouseStateChange}
+                            handleHover={handleHover}
+                            showChildren={showChildren[state]}
+                            setShowChildren={(value) =>
+                                setShowChildren({ ...showChildren, [state]: value })
+                            }
+                            handleMouseLeave={handleMouseLeave}
+                            className="navbarIcon"
+                            childIcons={children}
+                        >
+                            {children}
+                        </NavbarItem>
+                    ))}
+                    {imageModal && (
+                        <Modal
+                            onClose={() => setImageModal(false)}
+                            style={{
+                                backgroundColor: 'red',
                             }}
-                        />
-                    </Modal>
-                )}
+                            title="Upload Image"
+                            onConfirm={() => {
+                                setImageModal(false);
+
+                                localStorage.setItem(
+                                    'images',
+                                    JSON.stringify(
+                                        images.concat({
+                                            src: uploadedImage.src,
+                                            name: uploadedImage.name,
+                                        })
+                                    )
+                                );
+
+                                setShapes((prev) => ({
+                                    ...prev,
+                                    images: [...images, uploadedImage],
+                                }));
+                            }}
+                        >
+                            <FileUploader
+                                style={{ width: '100%', margin: '0 auto' }}
+                                fileTypes={['image/*']}
+                                onUpload={(fileList) => {
+                                    const file = fileList[0];
+
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.readAsDataURL(file);
+                                        reader.onload = () => {
+                                            setUploadedImage({
+                                                src: reader.result,
+                                                name: file.name,
+                                                id: Math.random().toString(36).substring(2, 6),
+                                            });
+                                        };
+                                    }
+                                }}
+                            />
+                        </Modal>
+                    )}
+                </div>
+            </div>
+            <div className="navbarHamburgerMenu">
+                <p> Placeholder</p>
             </div>
         </div>
     );
