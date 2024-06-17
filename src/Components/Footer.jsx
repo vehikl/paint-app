@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import {FaHamburger, FaMinus, FaPlus } from 'react-icons/fa';
+import React from 'react';
+import {FaMinus, FaPlus } from 'react-icons/fa';
 import NavbarItem from './NavbarItem';
 
 export const Footer = ({zoom, setZoom}) => {

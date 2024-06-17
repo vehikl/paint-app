@@ -14,24 +14,22 @@ export class PointerTool {
     setSelectedShapes
   ) {
     if (drawingRectangle && !isAdjusting) {
-      const ex = Math.max(drawingRectangle.x, e.evt.layerX);
-      const ey = Math.max(drawingRectangle.y, e.evt.layerY);
-
-      let sx = drawingRectangle.x;
-      let sy = drawingRectangle.y;
       const { x, y } = e.target.getStage().getPointerPosition();
+      const width = x - drawingRectangle.x;
+      const height = y - drawingRectangle.y;
       setDrawingRectangle({
-        x: sx,
-        y: sy,
-        width: x - sx,
-        height: y - sy,
+        ...drawingRectangle,
+        width,
+        height,
         fill: "rgba(30, 144, 255, 0.2)",
         strokeWidth: 0.75,
         stroke: "#1e90ff",
       });
 
-      sx = Math.min(drawingRectangle.x, e.evt.layerX);
-      sy = Math.min(drawingRectangle.y, e.evt.layerY);
+      const sx = Math.min(drawingRectangle.x, x);
+      const sy = Math.min(drawingRectangle.y, y);
+      const ex = Math.max(drawingRectangle.x, x);
+      const ey = Math.max(drawingRectangle.y, y);
 
       const selectedRects = shapes.rectangles
         .filter((rect) => {
@@ -56,8 +54,8 @@ export class PointerTool {
           const ellpsBounds = {
             left: ellps.x - ellps.width / 2,
             top: ellps.y - ellps.height / 2,
-            right: ellps.x + ellps.width + ellps.width / 2,
-            bottom: ellps.y + ellps.height + ellps.height / 2,
+            right: ellps.x + ellps.width / 2,
+            bottom: ellps.y + ellps.height / 2,
           };
 
           return !(
@@ -105,7 +103,7 @@ export class PointerTool {
         })
         .map((line) => line.id);
 
-      const selectedImages = selectedShapes.images
+      const selectedImages = shapes.images
         .filter((image) => {
           const imageBounds = {
             left: image.x,
@@ -124,7 +122,6 @@ export class PointerTool {
         .map((image) => image.id);
 
       setSelectedShapes({
-        ...selectedShapes,
         rectangles: selectedRects,
         ellipses: selectedEllipses,
         texts: selectedTexts,

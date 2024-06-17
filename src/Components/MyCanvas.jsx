@@ -3,7 +3,6 @@ import { Layer, Stage, Rect, Line, Ellipse } from "react-konva";
 import { Rectangle } from "./Shapes/Rectangle";
 import { EllipseComponent } from "./Shapes/Ellipse";
 import { ImageComponent } from "./Shapes/Image";
-
 import {
   PenTool,
   PointerTool,
@@ -19,10 +18,11 @@ const initialSelectedShapes = {
   ellipses: [],
   lines: [],
   texts: [],
+  images: [],
 };
 
 const cursorTypes = {
-  pen: `crosshair`,
+  pen: "crosshair",
   eraser: "default",
   rectangle: "crosshair",
   ellipse: "crosshair",
@@ -39,36 +39,41 @@ export const MyCanvas = ({ mouseState, shapes, setShapes, zoom }) => {
 
   const isDrawing = useRef(false);
 
-  const deleteImages = () => {
-    const imagesAfterDelete = shapes.images.filter(
-      (image) => !selectedShapes.images.includes(image.id)
-    );
+  const deleteShapes = () => {
     const updatedShapes = {
-      ...shapes,
-      images: imagesAfterDelete,
+      rectangles: shapes.rectangles.filter(
+        (rect) => !selectedShapes.rectangles.includes(rect.id)
+      ),
+      ellipses: shapes.ellipses.filter(
+        (ellps) => !selectedShapes.ellipses.includes(ellps.id)
+      ),
+      lines: shapes.lines.filter(
+        (line) => !selectedShapes.lines.includes(line.id)
+      ),
+      texts: shapes.texts.filter(
+        (text) => !selectedShapes.texts.includes(text.id)
+      ),
+      images: shapes.images.filter(
+        (image) => !selectedShapes.images.includes(image.id)
+      ),
     };
     setShapes(updatedShapes);
-    setRenderedImages((prev) => {
-      const newRenderedImages = prev.filter(
-        (image, index) =>
-          !selectedShapes.images.includes(shapes.images[index]?.id)
-      );
-      return newRenderedImages;
-    });
-
-    const imagesToDelete = shapes.images.filter((image) =>
-      selectedShapes.images.includes(image.id)
-    );
+    setSelectedShapes(initialSelectedShapes);
 
     localStorage.setItem(
       "images",
       JSON.stringify(
-        imagesAfterDelete.map((image) => {
-          return {
-            src: image.src,
-            id: image.id,
-          };
-        })
+        updatedShapes.images.map((image) => ({
+          src: image.src,
+          id: image.id,
+        }))
+      )
+    );
+
+    // Update rendered images
+    setRenderedImages((prev) =>
+      prev.filter((imageObj) =>
+        updatedShapes.images.some((image) => image.src === imageObj.src)
       )
     );
   };
@@ -76,26 +81,7 @@ export const MyCanvas = ({ mouseState, shapes, setShapes, zoom }) => {
   useEffect(() => {
     const handleDeleteKeyPress = (event) => {
       if (event.keyCode === 8) {
-        const updatedShapes = {
-          ...shapes,
-          rectangles: shapes.rectangles.filter(
-            (rect) => !selectedShapes.rectangles.includes(rect.id)
-          ),
-          ellipses: shapes.ellipses.filter(
-            (ellps) => !selectedShapes.ellipses.includes(ellps.id)
-          ),
-          lines: shapes.lines.filter(
-            (line) => !selectedShapes.lines.includes(line.id)
-          ),
-          texts: shapes.texts.filter(
-            (text) => !selectedShapes.texts.includes(text.id)
-          ),
-        };
-        setShapes(updatedShapes);
-
-        setSelectedShapes(initialSelectedShapes);
-
-        deleteImages();
+        deleteShapes();
       }
 
       if (event.keyCode === 65 && (event.ctrlKey || event.metaKey)) {
@@ -104,64 +90,16 @@ export const MyCanvas = ({ mouseState, shapes, setShapes, zoom }) => {
           ellipses: shapes.ellipses.map((ellps) => ellps.id),
           lines: shapes.lines.map((line) => line.id),
           texts: shapes.texts.map((text) => text.id),
+          images: shapes.images.map((image) => image.id),
         });
       }
     };
 
     document.addEventListener("keydown", handleDeleteKeyPress);
-
     return () => {
       document.removeEventListener("keydown", handleDeleteKeyPress);
     };
   }, [shapes, setShapes, selectedShapes]);
-
-  useEffect(() => {
-    const handleDeleteKeyPress = (event) => {
-      if (event.keyCode === 8) {
-        const imagesToDelete = shapes.images.map((image) => {
-          if (selectedShapes.images.includes(image.id)) {
-            return image;
-          }
-        });
-
-        const updatedShapes = {
-          ...shapes,
-          rectangles: shapes.rectangles.filter(
-            (rect) => !selectedShapes.rectangles.includes(rect.id)
-          ),
-          ellipses: shapes.ellipses.filter(
-            (ellps) => !selectedShapes.ellipses.includes(ellps.id)
-          ),
-          lines: shapes.lines.filter(
-            (line) => !selectedShapes.lines.includes(line.id)
-          ),
-          texts: shapes.texts.filter(
-            (text) => !selectedShapes.texts.includes(text.id)
-          ),
-        };
-        setShapes(updatedShapes);
-
-        setSelectedShapes(initialSelectedShapes);
-
-        deleteImages(imagesToDelete);
-      }
-
-      if (event.keyCode === 65 && (event.ctrlKey || event.metaKey)) {
-        setSelectedShapes({
-          rectangles: shapes.rectangles.map((rect) => rect.id),
-          ellipses: shapes.ellipses.map((ellps) => ellps.id),
-          lines: shapes.lines.map((line) => line.id),
-          texts: shapes.texts.map((text) => text.id),
-        });
-      }
-    };
-
-    document.addEventListener("keydown", handleDeleteKeyPress);
-
-    return () => {
-      document.removeEventListener("keydown", handleDeleteKeyPress);
-    };
-  }, [shapes, setShapes, selectedShapes, deleteImages]);
 
   const penTool = new PenTool();
   const textTool = new TextTool();
@@ -309,13 +247,13 @@ export const MyCanvas = ({ mouseState, shapes, setShapes, zoom }) => {
       <Layer>
         {renderedImages &&
           renderedImages.map((image, index) => {
+            const shapeImage = shapes.images.find((img) => img.src === image.src);
+            if (!shapeImage) return null;
             return (
               <ImageComponent
                 image={image}
                 key={index}
-                isSelected={selectedShapes.images?.includes(
-                  shapes.images[index]?.id
-                )}
+                isSelected={selectedShapes.images?.includes(shapeImage.id)}
                 setIsAdjusting={setIsAdjusting}
               />
             );

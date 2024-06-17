@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { FaAlignJustify, FaEraser, FaFile, FaHamburger } from 'react-icons/fa';
+import { FaAlignJustify, FaEraser, FaFile } from 'react-icons/fa';
+import { BiUndo, BiRedo } from "react-icons/bi";
 import { PiCursorBold, PiRectangleBold, PiCircleBold } from 'react-icons/pi';
 import { BsVectorPen } from 'react-icons/bs';
 import { RiImageAddLine } from 'react-icons/ri';
@@ -147,14 +148,20 @@ export const Navbar = ({ mouseState, setMouseState, setShapes }) => {
                                             });
                                         };
                                     }
+                                    setMouseState('pointer');
                                 }}
                             />
                         </Modal>
                     )}
                 </div>
             </div>
-            <div className="navbarHamburgerMenu">
-                <p> Placeholder</p>
+            <div className="historyControls">
+                <NavbarItem
+                    Icon={BiUndo}
+                />
+                <NavbarItem
+                    Icon={BiRedo}
+                />
             </div>
         </div>
     );
